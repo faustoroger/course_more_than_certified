@@ -1,2 +1,2 @@
-# course_more_than_certified
+# [More Than Certified](https://www.udemy.com/course/terraform-certified/)
 Code developed in the course More Than Certified
