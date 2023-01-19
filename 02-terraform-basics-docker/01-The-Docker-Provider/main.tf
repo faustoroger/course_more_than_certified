@@ -13,15 +13,14 @@ resource "docker_image" "nodered_image" {
 }
 
 resource "random_string" "random" {
-  count   = 2
+  count   = 1
   length  = 4
   special = false
   upper   = false
 }
 
-
 resource "docker_container" "nodered_container" {
-  count = 2
+  count = 1
   name  = join("-", ["nodered", random_string.random[count.index].result])
   image = docker_image.nodered_image.latest
   ports {
@@ -29,7 +28,6 @@ resource "docker_container" "nodered_container" {
     # external = 1880
   }
 }
-
 
 output "ip-address" {
   value       = [for i in docker_container.nodered_container[*] : join(":", [i.ip_address], i.ports[*]["external"])]
