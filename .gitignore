@@ -30,3 +30,8 @@ override.tf.json
 
 *tfplan*
 *.terraform.lock.hcl
+
+*.tfvars
+*.tfvars.*
+
+noderedvol/*
