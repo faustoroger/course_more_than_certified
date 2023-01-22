@@ -1,10 +1,3 @@
-resource "null_resource" "dockervol" {
-  provisioner "local-exec" {
-    # command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol/"
-    command = "mkdir noderedvol/ || true && chown -R 1000:1000 noderedvol/"
-  }
-}
-
 module "image" {
   source   = "./image"
   image_in = var.image[terraform.workspace]
@@ -17,10 +10,8 @@ resource "random_string" "random" {
   upper   = false
 }
 
-
 module "container" {
   source            = "./container"
-  depends_on        = [null_resource.dockervol]
   count             = local.container_count
   name_in           = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
   image_in          = module.image.image_out
