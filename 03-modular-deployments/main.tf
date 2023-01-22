@@ -1,15 +1,3 @@
-terraform {
-  required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 2.15.0"
-    }
-  }
-}
-
-
-provider "docker" {}
-
 resource "null_resource" "dockervol" {
   provisioner "local-exec" {
     # command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol/"
@@ -17,8 +5,9 @@ resource "null_resource" "dockervol" {
   }
 }
 
-resource "docker_image" "nodered_image" {
-  name = var.image[terraform.workspace]
+module "image" {
+  source   = "./image"
+  image_in = var.image[terraform.workspace]
 }
 
 resource "random_string" "random" {
@@ -32,7 +21,7 @@ resource "random_string" "random" {
 resource "docker_container" "nodered_container" {
   count = local.container_count
   name  = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
-  image = docker_image.nodered_image.latest
+  image = module.image.image_out
   ports {
     internal = var.int_port
     external = var.ext_port[terraform.workspace][count.index]
