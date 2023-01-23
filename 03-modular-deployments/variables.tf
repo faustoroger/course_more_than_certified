@@ -7,12 +7,15 @@ variable "image" {
       prod = "nodered/node-red:latest-minimal"
     }
     influxdb = {
-      dev  = "quay.io/influxdb/influxdb:v2.0.2"
-      prod = "quay.io/influxdb/influxdb:v2.0.2"
+      dev  = "influxdb:2.0.9"
+      prod = "influxdb:2.0.9"
+    }
+    grafana = {
+      dev  = "grafana/grafana:8.2.6"
+      prod = "grafana/grafana:8.2.6"
     }
   }
 }
-
 
 variable "ext_port" {
   type = map(any)
