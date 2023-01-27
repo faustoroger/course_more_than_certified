@@ -19,6 +19,10 @@ resource "aws_vpc" "mtc_vpc" {
   tags = {
     Name = "mtc_vpc-${random_integer.random.id}"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_subnet" "mtc_public_subnet" {
@@ -81,3 +85,20 @@ resource "aws_route_table_association" "mtc_public_assoc" {
   route_table_id = aws_route_table.mtc_public_rt.id
 }
 
+resource "aws_security_group" "mtc_sg" {
+  name        = "public_sg"
+  description = "Security Group for Public Access"
+  vpc_id      = aws_vpc.mtc_vpc.id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.access_ip]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
