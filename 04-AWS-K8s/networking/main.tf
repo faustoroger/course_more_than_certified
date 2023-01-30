@@ -90,6 +90,8 @@ resource "aws_security_group" "mtc_sg" {
   name        = each.value.name
   description = each.value.description
   vpc_id      = aws_vpc.mtc_vpc.id
+
+  #public Security Group
   dynamic "ingress" {
     for_each = each.value.ingress
     content {
@@ -104,5 +106,14 @@ resource "aws_security_group" "mtc_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_db_subnet_group" "mtc_rds_subnetgroup" {
+  count      = var.db_subnet_group == true ? 1 : 0
+  name       = "mtc_rds_subnetgroup"
+  subnet_ids = aws_subnet.mtc_private_subnet.*.id
+  tags = {
+    Name = "mtc_rds_sng"
   }
 }
