@@ -9,4 +9,5 @@ module "networking" {
   private_cidrs    = [for i in range(1, 255, 2) : cidrsubnet("10.123.0.0/16", 8, i)]
   public_cidrs     = [for i in range(2, 255, 2) : cidrsubnet("10.123.0.0/16", 8, i)]
   max_subnets      = 20
+  db_subnet_group  = true
 }
