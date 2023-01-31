@@ -1,4 +1,5 @@
 # --- networking/main.tf ---
+
 data "aws_availability_zones" "available" {}
 
 resource "random_integer" "random" {
@@ -19,7 +20,6 @@ resource "aws_vpc" "mtc_vpc" {
   tags = {
     Name = "mtc_vpc-${random_integer.random.id}"
   }
-
   lifecycle {
     create_before_destroy = true
   }
@@ -49,11 +49,20 @@ resource "aws_subnet" "mtc_private_subnet" {
   }
 }
 
+resource "aws_db_subnet_group" "mtc_rds_subnetgroup" {
+  count      = var.db_subnet_group == "true" ? 1 : 0
+  name       = "mtc_rds_subnetgroup"
+  subnet_ids = aws_subnet.mtc_private_subnet.*.id
+  tags = {
+    Name = "mtc_rds_sng"
+  }
+}
+
 resource "aws_internet_gateway" "mtc_internet_gateway" {
   vpc_id = aws_vpc.mtc_vpc.id
 
   tags = {
-    Name = "mtc_public"
+    Name = "mtc_igw"
   }
 }
 
@@ -65,11 +74,13 @@ resource "aws_route_table" "mtc_public_rt" {
   }
 }
 
-resource "aws_route" "mtc_default_route" {
+
+resource "aws_route" "default_route" {
   route_table_id         = aws_route_table.mtc_public_rt.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.mtc_internet_gateway.id
 }
+
 
 resource "aws_default_route_table" "mtc_private_rt" {
   default_route_table_id = aws_vpc.mtc_vpc.default_route_table_id
@@ -91,6 +102,8 @@ resource "aws_security_group" "mtc_sg" {
   description = each.value.description
   vpc_id      = aws_vpc.mtc_vpc.id
 
+
+
   #public Security Group
   dynamic "ingress" {
     for_each = each.value.ingress
@@ -101,19 +114,11 @@ resource "aws_security_group" "mtc_sg" {
       cidr_blocks = ingress.value.cidr_blocks
     }
   }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_db_subnet_group" "mtc_rds_subnetgroup" {
-  count      = var.db_subnet_group == true ? 1 : 0
-  name       = "mtc_rds_subnetgroup"
-  subnet_ids = aws_subnet.mtc_private_subnet.*.id
-  tags = {
-    Name = "mtc_rds_sng"
   }
 }
