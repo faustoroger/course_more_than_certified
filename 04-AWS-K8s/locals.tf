@@ -14,6 +14,12 @@ locals {
           protocol    = "tcp"
           cidr_blocks = [var.access_ip]
         }
+        tg = {
+          from        = 8000
+          to          = 8000
+          protocol    = "tcp"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
         http = {
           from        = 80
           to          = 80
