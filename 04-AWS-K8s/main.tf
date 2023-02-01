@@ -15,8 +15,9 @@ module "networking" {
 
 module "database" {
   source                 = "./database"
-  db_engine_version      = "5.7.22"
+  db_engine_version      = "5.7.40"
   db_instance_class      = "db.t2.micro"
+  db_storage             = 10
   dbname                 = var.dbname
   dbuser                 = var.dbuser
   dbpassword             = var.dbpassword
@@ -48,7 +49,7 @@ module "compute" {
   instance_count      = 2
   instance_type       = "t3.micro"
   vol_size            = "20"
-  public_key_path     = "/home/ubuntu/.ssh/mtckey.pub"
+  public_key_path     = "${path.root}/keys/mtckey.pub"
   key_name            = "mtckey"
   dbname              = var.dbname
   dbuser              = var.dbuser
