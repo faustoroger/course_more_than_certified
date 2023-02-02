@@ -1,3 +1,5 @@
+# --- compute/main.tf ---
+
 data "aws_ami" "server_ami" {
   most_recent = true
 
@@ -54,5 +56,5 @@ resource "aws_lb_target_group_attachment" "mtc_tg_attach" {
   count            = var.instance_count
   target_group_arn = var.lb_target_group_arn
   target_id        = aws_instance.mtc_node[count.index].id
-  port             = 8000
+  port             = var.tg_port
 }
