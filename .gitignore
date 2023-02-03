@@ -37,3 +37,4 @@ override.tf.json
 noderedvol/*
 backup/
 *containers.txt
+k3s*.yaml

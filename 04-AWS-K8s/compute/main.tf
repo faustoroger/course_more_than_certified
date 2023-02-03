@@ -44,7 +44,6 @@ resource "aws_instance" "mtc_node" {
     }
   )
 
-
   root_block_device {
     volume_size = var.vol_size
   }
@@ -54,16 +53,17 @@ resource "aws_instance" "mtc_node" {
       type        = "ssh"
       user        = "ubuntu"
       host        = self.public_ip
-      private_key = file("/home/ubuntu/.ssh/mtckey")
+      private_key = file("${path.root}/keys/mtckey")
     }
     script = "${path.root}/delay.sh"
   }
   provisioner "local-exec" {
     command = templatefile("${path.cwd}/scp_script.tpl",
       {
-        nodeip   = self.public_ip
-        k3s_path = "${path.cwd}/../"
-        nodename = self.tags.Name
+        local_sshkey_priv = "${path.root}/keys/mtckey"
+        nodeip            = self.public_ip
+        k3s_path          = "${path.cwd}/../"
+        nodename          = self.tags.Name
       }
     )
   }
